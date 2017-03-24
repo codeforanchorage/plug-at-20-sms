@@ -45,6 +45,8 @@ describe('getLowTemps function', function () {
                 });
         });
 
+        after(function () { nock.cleanAll(); })
+
         it('it retries 5 times, when successful it continues on parsing xml and returns object', function (done) {
             forecast.getLowTemps(function (err, data) {
                 expect(JSON.stringify(data)).to.eq(JSON.stringify(tempObj));
