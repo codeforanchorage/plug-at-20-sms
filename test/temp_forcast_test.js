@@ -20,9 +20,10 @@ var tempObj = {
 
 describe('getLowTemps function', function () {
 
+    // Adjust retry rate so these tests don't take forever
+    forecast.RETRY_DELAY = 1
+
     describe('test retry success', function () {
-        // adjust mocha testing framework default timeout, this is needed for the retries which have long delay
-        this.timeout(15000);
         before(function () {
             // respond with 504 status code 4 times, then responded with 200 code and xml response
             nock('http://graphical.weather.gov')

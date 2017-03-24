@@ -12,6 +12,10 @@ var LOW_TEMP_END_HOUR = '03' // 3am
 // weird ones that make the weather API error)
 var ZIPCODES = require('./zipcodes')
 
+// settings for retrying the weather API
+var MAX_RETRIES = 5
+var RETRY_DELAY = 5000 // 5 seconds
+
 function getWeatherUrl() {
     var d = new Date()
     d.setDate(d.getDate() + 1)
@@ -75,8 +79,8 @@ function getWeatherUrl() {
 function getLowTemps(callback) {
     let options = {
         url: getWeatherUrl(),
-        maxAttempts: 5,   // (default) try 5 times 
-        retryDelay: 2000,  // (default) wait for 5s before trying again 
+        maxAttempts: MAX_RETRIES,
+        retryDelay: exports.RETRY_DELAY, // using the export to facilitate test mocking
         headers: {
             'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36'
         }
@@ -113,6 +117,7 @@ function getTempsFromWeatherData(data, callback) {
     })
 }
 
-module.exports.getLowTemps = getLowTemps
+exports.getLowTemps = getLowTemps
+exports.RETRY_DELAY = RETRY_DELAY
 
 // getLowTemps((e,d)=>{console.log(e); console.dir(d)})
