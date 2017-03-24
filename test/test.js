@@ -12,7 +12,7 @@ require('../message_text.json')
 
 describe("Hit the weather API", () => {
   it('zipcodes should not error', function (done) {
-    this.timeout(10000)
+    this.timeout(30000)
 
     // Really basic test just to make sure the zipcodes don't error
     forecast.getLowTemps(function(err, data) {
