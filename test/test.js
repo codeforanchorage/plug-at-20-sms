@@ -10,7 +10,7 @@ var forecast = require('../temp_forecast')
 // Super basic test to make sure the messages.json file is valid
 require('../message_text.json')
 
-describe.skip("Hit the weather API, make sure zipcodes don't error", () => {
+describe("Hit the weather API, make sure zipcodes don't error", () => {
   it('should work', (done) => {
     // Really basic test just to make sure the zipcodes don't error
     forecast.getLowTemps(function(err, data) {
