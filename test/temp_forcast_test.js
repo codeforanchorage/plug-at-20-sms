@@ -23,6 +23,9 @@ describe('getLowTemps function', function () {
     // Adjust retry rate so these tests don't take forever
     forecast.RETRY_DELAY = 1
 
+    // Unmock weather api after these tests are done
+    after(function () { nock.cleanAll(); });
+
     describe('test retry success', function () {
         before(function () {
             // respond with 504 status code 4 times, then responded with 200 code and xml response
@@ -44,8 +47,6 @@ describe('getLowTemps function', function () {
                     'Content-Type': 'text/xml'
                 });
         });
-
-        after(function () { nock.cleanAll(); })
 
         it('it retries 5 times, when successful it continues on parsing xml and returns object', function (done) {
             forecast.getLowTemps(function (err, data) {
