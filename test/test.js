@@ -41,6 +41,7 @@ describe("Sending Messages", () =>{
         cron_job.sendMessages()
         // twilio messages are throlled -- wait until they have sent
         setTimeout(() =>{
+            // data from ./fixtures/db.json
             sinon.assert.calledWith(sendStub, '+19075551111')
             sinon.assert.calledWith(sendStub, '+19075551112')
             sinon.assert.neverCalledWith(sendStub, '+19075551113') // 40º forecast shouldn't send
