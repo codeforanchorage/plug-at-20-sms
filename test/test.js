@@ -37,16 +37,16 @@ describe("Sending Messages", () =>{
         getTempStub.restore()
     })
     it("Calls sendToTwilio", function(done) {
-        this.timeout(5500)
+        this.timeout(4000)
         cron_job.sendMessages()
         // twilio messages are throlled -- wait until they have sent
-        setTimeout(() =>{
+        setTimeout(() => {
             // data from ./fixtures/db.json
             sinon.assert.calledWith(sendStub, '+19075551111')
             sinon.assert.calledWith(sendStub, '+19075551112')
             sinon.assert.neverCalledWith(sendStub, '+19075551113') // 40º forecast shouldn't send
             done()
-        }, 5000)
+        }, 3000)
     })
   })
 })
