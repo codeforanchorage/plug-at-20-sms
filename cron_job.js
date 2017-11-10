@@ -18,7 +18,7 @@ var NOTIFICATION_TEMPERATURE = 20
 var TWILIO_SID = 'AC4d903012a56c8cba55657d6f9520846e'
 var TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN
 var TWILIO_NUMBER = '+19073122014'
-
+var DELAY = 500 // throttle calls to Twilio
 
 var job = new cron.CronJob({
     // run every day at the hour specified above
@@ -28,20 +28,16 @@ var job = new cron.CronJob({
     timeZone: 'America/Anchorage'
 });
 
-function sendMessages(cb) {
-    var DELAY = 500; // throttle calles to twilio
-
+function sendMessages() {
     // get weather
     forecast.getLowTemps(function(err, data) {
         if (err) return rollbar.handleError(err)
         var subscribers = db('subscribers').filter(sub => data[sub.zip] <= NOTIFICATION_TEMPERATURE)
+
         // loop over subscribers with delay
         var inter = setInterval( gen => {
             var next = gen.next()
-            if (next.done) {
-                clearInterval(inter)
-                return cb()
-            }
+            if (next.done)  return clearInterval(inter)
             var subscriber = next.value
             module.exports.sendToTwilio(subscriber.phone, randomElement(message_text.NOTIFICATIONS))
         }, DELAY, subscribers[Symbol.iterator]())
