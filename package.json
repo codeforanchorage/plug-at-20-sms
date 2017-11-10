@@ -4,7 +4,7 @@
   "description": "Sends SMS reminders to plug in your car when the temp drops below 20",
   "main": "index.js",
   "scripts": {
-    "test": "mocha test",
+    "test": "NODE_ENV=test mocha test",
     "start": "node index"
   },
   "repository": {
@@ -30,6 +30,7 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "mocha": "^3.2.0",
-    "nock": "^9.0.9"
+    "nock": "^9.0.9",
+    "sinon": "^4.1.2"
   }
 }
