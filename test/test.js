@@ -4,7 +4,6 @@
 var cron = require('cron')
 var sinon = require('sinon')
 var twilio = require('twilio')
-var fs = require('fs')
 
 // project imports
 var forecast = require('../temp_forecast')
