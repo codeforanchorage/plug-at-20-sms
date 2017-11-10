@@ -47,7 +47,6 @@ describe("Sending Messages", () =>{
             sinon.assert.neverCalledWith(sendStub, '+19075551113') // 40º forecast shouldn't send
             done()
         }, 3000)
-
     })
   })
 })
