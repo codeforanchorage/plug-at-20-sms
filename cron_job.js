@@ -48,9 +48,9 @@ function sendToTwilio(to, body){
     var twilio_client = twilio(TWILIO_SID, TWILIO_AUTH_TOKEN)
     twilio_client.sendMessage(
         {
-            to: subscriber.phone,
+            to: to,
             from: TWILIO_NUMBER,
-            body: randomElement(message_text.NOTIFICATIONS),
+            body: body,
         },
         function (err, response) {
             if (err) return rollbar.handleError(err)
