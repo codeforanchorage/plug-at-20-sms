@@ -1,7 +1,8 @@
 'use strict'
 
-
 var low = require('lowdb')
 var storage = require('lowdb/file-sync')
 
-module.exports = low('db.json', { storage: storage })
+var dbPath = process.env.NODE_ENV === 'test' ? './test/fixtures/db_test.json' : 'db.json'
+
+module.exports = low(dbPath, { storage: storage })

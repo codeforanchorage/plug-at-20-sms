@@ -18,7 +18,7 @@ var NOTIFICATION_TEMPERATURE = 20
 var TWILIO_SID = 'AC4d903012a56c8cba55657d6f9520846e'
 var TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN
 var TWILIO_NUMBER = '+19073122014'
-
+var DELAY = 500 // throttle calls to Twilio
 
 var job = new cron.CronJob({
     // run every day at the hour specified above
@@ -28,35 +28,37 @@ var job = new cron.CronJob({
     timeZone: 'America/Anchorage'
 });
 
-
 function sendMessages() {
-    // instantiating this here so it'll run without an auth token in dev
-    var twilio_client = twilio(TWILIO_SID, TWILIO_AUTH_TOKEN)
-
     // get weather
     forecast.getLowTemps(function(err, data) {
         if (err) return rollbar.handleError(err)
+        var subscribers = db('subscribers').filter(sub => data[sub.zip] <= NOTIFICATION_TEMPERATURE)
 
-        db('subscribers').forEach(function(subscriber) {
-            console.log(subscriber)
-            if (data[subscriber.zip] <= NOTIFICATION_TEMPERATURE) {
-                twilio_client.sendMessage(
-                    {
-                        to: subscriber.phone,
-                        from: TWILIO_NUMBER,
-                        body: randomElement(message_text.NOTIFICATIONS),
-                    },
-                    function (err, response) {
-                        if (err) return rollbar.handleError(err)
-
-                        console.log(response)
-                    }
-                )
-            }
-        })
+        // loop over subscribers with delay
+        var inter = setInterval( gen => {
+            var next = gen.next()
+            if (next.done)  return clearInterval(inter)
+            var subscriber = next.value
+            module.exports.sendToTwilio(subscriber.phone, randomElement(message_text.NOTIFICATIONS))
+        }, DELAY, subscribers[Symbol.iterator]())
     })
 }
 
+function sendToTwilio(to, body){
+    var twilio_client = twilio(TWILIO_SID, TWILIO_AUTH_TOKEN)
+    twilio_client.sendMessage(
+        {
+            to: to,
+            from: TWILIO_NUMBER,
+            body: body,
+        },
+        function (err, response) {
+            if (err) return rollbar.handleError(err)
+
+            console.log(response)
+        }
+    )
+}
 
 function randomElement(items) {
     return items[Math.floor(Math.random()*items.length)]
@@ -64,3 +66,4 @@ function randomElement(items) {
 
 module.exports.job = job
 module.exports.sendMessages = sendMessages
+module.exports.sendToTwilio = sendToTwilio
