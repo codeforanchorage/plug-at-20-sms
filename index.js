@@ -44,6 +44,13 @@ app.post('/', function(req, res, next) {
 
     // if they sent a zipcode
     if (zip) {
+        // if they are a subscriber, delete any existing zips first
+        if (is_subscriber) {
+            db('subscribers').remove(function(item) {
+                return item.phone == phone_number
+            })
+        }
+
         if (ZIPCODES.indexOf(zip) > -1) {
             db('subscribers').push({
                 phone: phone_number,
@@ -54,6 +61,13 @@ app.post('/', function(req, res, next) {
         else {
             return res.send(text.BAD_ZIP)
         }
+    }
+    // handle unsubscriptions
+    else if (is_subscriber && message.toLowerCase().trim() === 'stop') {
+        db('subscribers').remove(function(item) {
+            return item.phone == phone_number
+        })
+        return res.send(text.GOODBYE)
     }
     // if we know this number, what the hell are they trying to tell us?
     else if (is_subscriber) {
