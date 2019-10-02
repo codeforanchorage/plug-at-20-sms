@@ -71,14 +71,18 @@ app.post('/', function(req, res, next) {
     }
     // if we know this number, what the hell are they trying to tell us?
     else if (is_subscriber) {
-        // log the message, maybe it's interesting
-        db('unknown_commands').push({
-            phone: phone_number,
-            message: message,
-        })
+        // setup and send unknown command to slack feedback channel.
+        var fallback_msg = "FROM: " + phone_number + " - " + message
+        var title_msg = "FROM: " + phone_number
         request.post(SLACK_WEBHOOK).form(JSON.stringify({
-            "username":"citizen",
-            "text":message
+            "username":"Citizen Feedback",
+            "attachments": [
+                {
+                    "fallback": fallback_msg,
+                    "title": title_msg,
+                    "text": message
+                }
+            ]
         }))
         return res.send(text.INSTRUCTIONS)
     }
